@@ -9,7 +9,8 @@ import { connectMongoDB } from "./config/mongoDB.config.js";
 
 const app = express();
 
-connectMongoDB();
+
+connectMongoDB()
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
