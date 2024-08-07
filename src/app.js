@@ -4,8 +4,12 @@ import __dirname from "./dirname.js";
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
 import viewsRoutes from "./routes/views.routes.js";
+import studentRoutes from "./routes/students.routes.js";
+import { connectMongoDB } from "./config/mongoDB.config.js";
 
 const app = express();
+
+connectMongoDB();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -19,6 +23,7 @@ app.use("/api", routes);
 
 // Ruta de las vistas
 app.use("/", viewsRoutes)
+app.use("/student", studentRoutes)
 
 const httpServer = app.listen(8080, () => {
     console.log("Servidor escuchando en el puerto 8080"); // Iniciamos el servidor en el puerto 8080
