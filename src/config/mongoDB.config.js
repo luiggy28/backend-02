@@ -8,7 +8,7 @@ export const connectMongoDB = async () => {
         console.log("Mongo DB Connected")
         
     } catch (error) {
-        console.log(`${error}`)
+        console.log(`Error: ${error}`)
         
     }
 }
