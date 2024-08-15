@@ -17,7 +17,7 @@ app.use(express.json());
 app.engine("handlebars", handlebars.engine()); // Inicia el motor del la plantilla
 app.set("views", __dirname + "/views"); // Indicamos que ruta se encuentras las vistas
 app.set("view engine", "handlebars"); // Indicamos con que motor vamos a utilizar las vistas
-app.use(express.static("public"));
+/* app.use(express.static("public")); */
 
 // Rutas de la api
 app.use("/api", routes);
