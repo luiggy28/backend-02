@@ -1,10 +1,11 @@
 
 import mongoose from "mongoose";
+import envs from "./envs.config.js";
 
 export const connectMongoDB = async () => {
     try {
 
-        await mongoose.connect("mongodb+srv://admin:123@luiggy123.byhrh.mongodb.net/base001");
+        await mongoose.connect(envs.MONGO_URL);
         
         console.log("Mongo DB Connected")
         
@@ -13,4 +14,3 @@ export const connectMongoDB = async () => {
         
     }
 }
-

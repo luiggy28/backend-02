@@ -10,7 +10,7 @@ const importProducts = async () => {
         await connectMongoDB();
 
         // Leer el archivo JSON
-        const productsData = await fs.promises.readFile('./products.json', 'utf-8');
+        const productsData = await fs.promises.readFile('./src/scripts/products.json', 'utf-8');
         const products = JSON.parse(productsData);
 
         // Insertar productos en la base de datos

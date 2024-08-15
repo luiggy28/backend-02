@@ -1,47 +1,47 @@
-
-import { Router } from "express";
-import { studentModel } from "../models/student.model.js";
+import { Router } from 'express';
+import { userModel } from '../dao/mongoDB/models/user.model.js';
 
 const router = Router();
 
 router.get("/", async (req, res) => {
+
     try {
+
+        const users = await userModel.find();
+
+        res.status(200).json({ status: "success", payload: users });
         
-        const students = await studentModel.find();
-
-        res.status(200).json({ status: "success", payload: students });
-
-
     } catch (error) {
         console.log(`Error: ${error.message}`);
         res.status(500).json({status: "Error", msg: "Internal server error"})
     }
+    
 });
 
-router.get("/:pid", async (req, res) => { 
-    
+router.get("/:id", async (req, res) => {
+
     try {
+        const { id } = req.params;
+        const user = await userModel.findById(id);
+        if(!user) return res.status(400).json({status: "Error", msg: "user not found"});
 
-        const { pid } = req.params;
-        const student = await studentModel.findById(pid);
-        if(!student) return res.status(400).json({status: "Error", msg: "student not found"});
-
-        res.status(200).json({ status: "success", payload: student });
+        res.status(200).json({ status: "success", payload: user });
         
     } catch (error) {
         console.log(`Error: ${error.message}`);
         res.status(500).json({status: "Error", msg: "Internal server error"})
     }
+    
 });
 
 router.post("/", async (req, res) => {
 
     try {
 
-        const studentData = req.body;
-        const student = await studentModel.create(studentData);
+        const userData = req.body;
+        const user = await userModel.create(userData);
 
-        res.status(200).json({ status: "success", payload: student });
+        res.status(200).json({ status: "success", payload: user });
         
     } catch (error) {
         console.log(`Error: ${error.message}`);
@@ -55,10 +55,10 @@ router.put("/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const body = req.body;
-        const student = await studentModel.findByIdAndUpdate(id, body);
-        const studentUpdate = await studentModel.findById(id);
+        const user = await userModel.findByIdAndUpdate(id, body);
+        const userUpdate = await userModel.findById(id);
 
-        res.status(200).json({ status: "success", payload: studentUpdate });
+        res.status(200).json({ status: "success", payload: userUpdate });
         
     } catch (error) {
         console.log(error);
@@ -71,7 +71,7 @@ router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
 
-        const student = await studentModel.deleteOne({_id: id});
+        const user = await userModel.deleteOne({_id: id});
 
         res.json({ status: "success", payload: "Alumno eliminado con éxito" });
         

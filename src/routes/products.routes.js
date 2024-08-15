@@ -1,69 +1,85 @@
 import { Router } from "express";
 import { checkProductData } from "../middlewares/checkProductData.middleware.js";
 import productDao from "../dao/mongoDB/product.dao.js";
+import { productModel } from "../dao/mongoDB/models/product.model.js";
 
 const router = Router(); // Inicializamos el router
 
-router.get("/", async (req, res) => { // Ruta para obtener todos los productos
+router.get("/", async (req, res) => {
     try {
-        const products = await productDao.getAll();
-        res.status(200).json({ status: "success", products }); // Respondemos con los productos
+        
+        const products = await productModel.find();
+
+        res.status(200).json({ status: "success", payload: products });
+
+
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" }); // Si hay un error, respondemos con un error
+        console.log(`Error: ${error.message}`);
+        res.status(500).json({status: "Error", msg: "Internal server error"})
     }
 });
 
-router.get("/:pid", async (req, res) => { // Ruta para obtener un producto por id
+router.get("/:pid", async (req, res) => { 
+    
     try {
-        const { pid } = req.params; // Obtenemos el id del producto
-        const product = await productDao.getById(pid); // Buscamos el producto por id
-        if (!product) return res.status(404).json({ status: "Error", msg: "Producto no encontrado" }); // Si no se encuentra el producto, respondemos con un error
 
-        res.status(200).json({ status: "success", product }); // Respondemos con el producto encontrado
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" }); // Si hay un error, respondemos con un error
-    }
-});
-
-router.delete("/:pid", async (req, res) => { // Ruta para eliminar un producto por id
-    try {
         const { pid } = req.params;
-        const product = await productDao.deleteOne(pid); // Eliminamos el producto por id
-        if (!product) return res.status(404).json({ status: "Error", msg: "Producto no encontrado" }); // Si no se encuentra el producto, respondemos con un error
+        const product = await productModel.findById(pid);
+        if(!product) return res.status(400).json({status: "Error", msg: "Product not found"});
 
-        res.status(200).json({ status: "success", msg: `El producto con el id ${pid} fue eliminado` }); // Respondemos con el producto eliminado
+        res.status(200).json({ status: "success", payload: product });
+        
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" }); // Si hay un error, respondemos con un error
+        console.log(`Error: ${error.message}`);
+        res.status(500).json({status: "Error", msg: "Internal server error"})
     }
 });
 
-router.put("/:pid", async (req, res) => { // Ruta para actualizar un producto por id
-    try {
-        const { pid } = req.params; 
-        const productData = req.body
-        const product = await productDao.update(pid, productData);
-        if (!product) return res.status(404).json({ status: "Error", msg: "Producto no encontrado" }); 
+router.post("/", async (req, res) => {
 
-        res.status(200).json({ status: "success", product });
+    try {
+
+        const productData = req.body;
+        const product = await productModel.create(productData);
+
+        res.status(200).json({ status: "success", payload: product });
+        
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" }); // Si hay un error, respondemos con un error
+        console.log(`Error: ${error.message}`);
+        res.status(500).json({status: "Error", msg: "Internal server error"})
     }
+    
 });
 
-router.post("/", checkProductData, async (req, res) => { // Ruta para agregar un producto
-    try {
-        const productData = req.body; // Obtenemos el body de la petición
-        const product = await productDao.create(productData); // Agregamos el producto
+router.put("/:id", async (req, res) => {
 
-        res.status(201).json({ status: "success", product }); // Respondemos con el producto creado
+    try {
+        const { id } = req.params;
+        const body = req.body;
+        const product = await productModel.findByIdAndUpdate(id, body);
+        const productUpdate = await productModel.findById(id);
+
+        res.status(200).json({ status: "success", payload: productUpdate });
+        
     } catch (error) {
         console.log(error);
-        res.status(500).json({ status: "Error", msg: "Error interno del servidor" }); // Si hay un error, respondemos con un error
     }
+    
+});
+
+router.delete("/:id", async (req, res) => {
+
+    try {
+        const { id } = req.params;
+
+        const product = await productModel.deleteOne({_id: id});
+
+        res.json({ status: "success", payload: "Alumno eliminado con éxito" });
+        
+    } catch (error) {
+        console.log(error);
+    }
+    
 });
 
 

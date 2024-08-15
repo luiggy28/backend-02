@@ -1,34 +1,29 @@
 
 import { studentModel } from "./models/student.model.js";
 
-const getAll = async () => {
-    const students = await studentModel.find({ status: true });
-    return students;
+const getAll = async (query) => {
+    return await studentModel.find(query);
 };
 
-const getById = async (id) => {
-    const student = await studentModel.findById(id);
-    return student;
+const getOne = async (query) => {
+    return await studentModel.findOne(query);
 };
 
 const create = async (data) => {
-    const student = await studentModel.create(data);
-    return student;
+    return await studentModel.create(data);
 };
 
 const update = async (id, data) => {
-    const studentUpdate = await studentModel.findByIdAndUpdate(id, data, { new: true });
-    return studentUpdate;
+    return await studentModel.findByIdAndUpdate(id, data, { new: true });
 };
 
 const deleteOne = async (id) => {
-    const student = await studentModel.findByIdAndUpdate(id, { status: false }, { new: true });
-    return student;
+    return await studentModel.findByIdAndDelete(id);
 };
 
 export default {
     getAll,
-    getById,
+    getOne,
     create,
     update,
     deleteOne
