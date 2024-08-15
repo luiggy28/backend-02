@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import userDao from '../dao/mongoDB/user.dao.js';
 import { createHash } from '../utils/hashPassword.js';
+import bcrypt from 'bcrypt';
 
 
 const router = Router();
@@ -49,7 +50,12 @@ router.post("/login", async (req, res) => {
 
         const user = await userDao.getByEmail(email);
         
-        if(!user || user.password !== password) return res.status(401).json({status: error, msg: "Email or password incorrect"});
+        // Verificamos si el usuario existe y si la contraseña es correcta
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ status: "error", msg: "Email or password incorrect" });
+        }
+
+        // Si es correcto, establecemos la sesión del usuario
         req.session.user = {
             email,
             role: "user"
