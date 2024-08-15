@@ -1,6 +1,8 @@
 
 import { Router } from 'express';
 import userDao from '../dao/mongoDB/user.dao.js';
+import { createHash } from '../utils/hashPassword.js';
+
 
 const router = Router();
 
@@ -11,8 +13,16 @@ router.get("/", (req, res) => {
 router.post("/register", async (req, res) => {
     
     try {
-        const userData = req.body;
-        const user = await userDao.create(userData);
+        const {first_name, last_name, age, email, gender, password} = req.body;
+        const newUser = {
+            first_name,
+            last_name,
+            age,
+            email,
+            gender,
+            password: createHash(password)
+        }
+        const user = await userDao.create(newUser);
         if(!user) return res.status(400).json({status: error, msg: "User not created"});
 
         return res.status(201).json({status: "ok", msg: "User created", user});
